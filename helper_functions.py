@@ -67,4 +67,33 @@ def kimura_two_parameter(reference_sequence: str, distant_sequence: str) -> floa
         For example 1.196.
 
     """
-    raise NotImplementedError()
+    transitions = 0
+    transversions = 0
+    valid_positions = 0
+
+    for ref, seq in zip(reference_sequence, distant_sequence):
+        if ref not in "ACTG" or seq not in "ACTG":
+            continue
+
+        valid_positions += 1
+
+        if ref != seq:
+            if (ref in "AG" and seq in "AG") or (ref in "CT" and seq in "CT"):
+                transitions += 1
+            else:
+                transversions += 1
+
+    if valid_positions == 0:
+        return 0.0
+
+    P = transitions / valid_positions
+    Q = transversions / valid_positions
+
+    if 1 - 2 * P - Q <= 0 or 1 - 2 * Q <= 0:
+        return float("inf")
+
+    k2p = -0.5 * np.log(1 - 2 * P - Q) - 0.25 * np.log(1 - 2 * Q)
+
+    answer = k2p * valid_positions
+    return answer
+            
